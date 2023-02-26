@@ -13,9 +13,7 @@
             Lilith = 6,
             Ophelia = 7,
             Pug = 8,
-            //GlitchAnim = 11,
-            //Hitler = 10,
-            //Hitler2 = 9
+            GlitchAnim = 9,
         }
     }
 }

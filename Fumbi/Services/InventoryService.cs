@@ -37,7 +37,8 @@ namespace Fumbi.Services
                 Kitty = 0,
                 Lilith = 0,
                 Ophelia = 0,
-                Pug = 0
+                Pug = 0,
+                GlitchAnim = 0
             };
 
             using (var db = Database.Open())

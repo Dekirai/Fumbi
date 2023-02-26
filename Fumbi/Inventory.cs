@@ -26,12 +26,8 @@ namespace Fumbi
         public byte Ophelia { get; set; }
 
         public byte Pug { get; set; }
-
-        public byte Hitler { get; set; }
-
-        public byte Hitler2 { get; set; }
-
         public byte GlitchAnim { get; set; }
+
 
         public async Task UpdateInventoryAsync()
         {

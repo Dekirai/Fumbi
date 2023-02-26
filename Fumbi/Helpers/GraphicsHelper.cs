@@ -15,7 +15,7 @@ namespace Fumbi.Helpers
         {
             bool isAnimated = false;
 
-            if (theme == 11)
+            if (theme == 9)
                 isAnimated = true;
 
             string extension = !isAnimated ? ".png" : ".gif";
@@ -60,7 +60,7 @@ namespace Fumbi.Helpers
         {
             bool isAnimated = false;
 
-            if (theme == 11)
+            if (theme == 9)
                 isAnimated = true;
 
             string extension = !isAnimated ? ".png" : ".gif";
@@ -123,7 +123,7 @@ namespace Fumbi.Helpers
         {
             bool isAnimated = false;
 
-            if (theme == 11)
+            if (theme == 9)
                 isAnimated = true;
 
             string extension = !isAnimated ? ".png" : ".gif";

@@ -33,9 +33,10 @@ namespace Fumbi.Modules
 
             using (var image = await user.DrawProfileImageAsync(await UserService.CalculateRankAsync(User.Id), User.GetAvatarUrl()))
             {
+                await DeferAsync();
                 string extension = image.Length < 1000000 ? ".png" : ".gif";
 
-                await RespondWithFileAsync(image, "profile" + extension);
+                await FollowupWithFileAsync(image, "profile" + extension);
             }
         }
 
@@ -93,7 +94,7 @@ namespace Fumbi.Modules
         {
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
 
-            if (Theme <= 0 || Theme > 8)
+            if (Theme <= 0 || Theme > 9)
             {
                 await RespondAsync("Theme not found.");
                 Logger.Information("H!buy used by {name}({uid}) with unknown theme -> {theme}", Context.User.Username, Context.User.Id, Theme);
@@ -134,7 +135,7 @@ namespace Fumbi.Modules
         {
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
 
-            if (Theme < 0 || Theme > 8)
+            if (Theme < 0 || Theme > 9)
             {
                 await RespondAsync("Theme not found.");
                 Logger.Information("H!use used by {name}({uid}) with unknown theme -> {theme}", Context.User.Username, Context.User.Id, Theme);
@@ -269,14 +270,14 @@ namespace Fumbi.Modules
 
                 user.Pen += Amount * (multiplier - 1);
                 await user.UpdateUserAsync();
-                await RespondAsync($"Congratz, you have won {Amount * (multiplier - 1)} pen!");
+                await RespondAsync($"Congratulations, you spent {Amount} and have won {Amount * (multiplier - 1)} PEN!");
                 Logger.Information("H!gamble won by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount * (multiplier - 1));
                 return;
             }
 
             user.Pen -= Amount;
             await user.UpdateUserAsync();
-            await RespondAsync("Sadly, you have lost : ^(");
+            await RespondAsync($"Sadly, you have lost :( ({Amount} PEN)");
             Logger.Information("H!gamble lost by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount);
         }
 
