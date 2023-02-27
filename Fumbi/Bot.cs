@@ -79,7 +79,7 @@ namespace Fumbi
             var time = $"{DateTime.Now.ToLongTimeString()}";
             var user = $"{command.User.Username}#{command.User.Discriminator}";
             var userid = $"{command.User.Username}#{command.User.Id}";
-            Logger.Information("User {0}({1}) issued command {2}.", user, userid, command.CommandName);
+            Logger.Information("User {0} issued command {2}.", user, userid, command.CommandName);
         }
 
         private static async Task MessageReceivedAsync(SocketMessage rawMessage)

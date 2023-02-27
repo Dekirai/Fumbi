@@ -1,16 +1,10 @@
 ﻿using Discord;
-using Discord.Commands;
 using Discord.Interactions;
 using Fumbi.Handlers;
-using Fumbi.Helpers;
 using Fumbi.Services;
-using Google.Protobuf;
 using Serilog;
 using Serilog.Core;
-using System;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fumbi.Modules
 {
@@ -25,7 +19,7 @@ namespace Fumbi.Modules
             if (User.GetAvatarUrl() == null)
             {
                 await RespondAsync("User does not have an avatar.");
-                Logger.Information("H!profile used by {name}({uid}) with empty avatar(mentioned)", Context.User.Username, Context.User.Id);
+                Logger.Information("/profile used by {name}({uid}) with empty avatar(mentioned)", Context.User.Username, Context.User.Id);
                 return;
             }
 
@@ -48,7 +42,7 @@ namespace Fumbi.Modules
             if (avatar == null)
             {
                 await RespondAsync("User does not have an avatar.");
-                Logger.Information("H!avatar used by {name}({uid}) with empty avatar(mentioned)", Context.User.Username, Context.User.Id);
+                Logger.Information("/avatar used by {name}({uid}) with empty avatar(mentioned)", Context.User.Username, Context.User.Id);
                 return;
             }
 
@@ -62,7 +56,7 @@ namespace Fumbi.Modules
             if (User.GetAvatarUrl() == null)
             {
                 await RespondAsync("User does not have an avatar.");
-                Logger.Information("H!rank used by {name}({uid}) with empty avatar(mentioned)", Context.User.Username, Context.User.Id);
+                Logger.Information("/rank used by {name}({uid}) with empty avatar(mentioned)", Context.User.Username, Context.User.Id);
                 return;
             }
 
@@ -80,7 +74,7 @@ namespace Fumbi.Modules
         public async Task ShopCommand()
         {
             var embed = new EmbedBuilder();
-            embed.WithDescription("Write H!buy + themes id to buy, each theme is 250k pen");
+            embed.WithDescription("Write /buy + themes id to buy, each theme is 250k pen");
             embed.WithTitle("Profile theme shop");
             foreach (var theme in Enum.GetValues(typeof(Shop.ProfileTheme)).Cast<Shop.ProfileTheme>().Skip(1).ToArray())
                 embed.AddField(theme.ToString(), theme.GetHashCode(), true);
@@ -97,14 +91,14 @@ namespace Fumbi.Modules
             if (Theme <= 0 || Theme > 9)
             {
                 await RespondAsync("Theme not found.");
-                Logger.Information("H!buy used by {name}({uid}) with unknown theme -> {theme}", Context.User.Username, Context.User.Id, Theme);
+                Logger.Information("/buy used by {name}({uid}) with unknown theme -> {theme}", Context.User.Username, Context.User.Id, Theme);
                 return;
             }
 
             if (user.Pen < 250000)
             {
                 await RespondAsync("Not enough pen.");
-                Logger.Information("H!buy used by {name}({uid}) with insufficient pen -> {pen}", Context.User.Username, Context.User.Id, user.Pen);
+                Logger.Information("/buy used by {name}({uid}) with insufficient pen -> {pen}", Context.User.Username, Context.User.Id, user.Pen);
                 return;
             }
 
@@ -115,7 +109,7 @@ namespace Fumbi.Modules
             if (inventory.CheckInventory(i))
             {
                 await RespondAsync("You already have that theme.");
-                Logger.Information("H!buy used by {name}({uid}) with already acquired theme -> ", Context.User.Username, Context.User.Id, i.GetHashCode());
+                Logger.Information("/buy used by {name}({uid}) with already acquired theme -> ", Context.User.Username, Context.User.Id, i.GetHashCode());
                 return;
             }
 
@@ -138,7 +132,7 @@ namespace Fumbi.Modules
             if (Theme < 0 || Theme > 9)
             {
                 await RespondAsync("Theme not found.");
-                Logger.Information("H!use used by {name}({uid}) with unknown theme -> {theme}", Context.User.Username, Context.User.Id, Theme);
+                Logger.Information("/use used by {name}({uid}) with unknown theme -> {theme}", Context.User.Username, Context.User.Id, Theme);
                 return;
             }
 
@@ -149,7 +143,7 @@ namespace Fumbi.Modules
             if (!inventory.CheckInventory(i))
             {
                 await RespondAsync("You dont have that theme.");
-                Logger.Information("H!use used by {name}({uid}) without the theme -> {theme}", Context.User.Username, Context.User.Id, i.GetHashCode());
+                Logger.Information("/use used by {name}({uid}) without the theme -> {theme}", Context.User.Username, Context.User.Id, i.GetHashCode());
                 return;
             }
 
@@ -188,12 +182,12 @@ namespace Fumbi.Modules
             if (h != 0)
             {
                 await RespondAsync("You can claim your daily in " + h + "h " + m + "m");
-                Logger.Information("H!daily used by {name}({uid}) while on cooldown, cooldown left -> {hours}h {minutes}m", Context.User.Username, Context.User.Id, h, m);
+                Logger.Information("/daily used by {name}({uid}) while on cooldown, cooldown left -> {hours}h {minutes}m", Context.User.Username, Context.User.Id, h, m);
             }
             else
             {
                 await RespondAsync("You can claim your daily in " + m + "m");
-                Logger.Information("H!daily used by {name}({uid}) while on cooldown, cooldown left -> {minutes}m", Context.User.Username, Context.User.Id, m);
+                Logger.Information("/daily used by {name}({uid}) while on cooldown, cooldown left -> {minutes}m", Context.User.Username, Context.User.Id, m);
             }
         }
 
@@ -259,8 +253,8 @@ namespace Fumbi.Modules
 
             if (Amount > user.Pen)
             {
-                await RespondAsync("You don't have enough pen.");
-                Logger.Information("H!gamble used by {name}({uid}) with insufficient pen -> {currentPen}({amount})", Context.User.Username, Context.User.Id, user.Pen, Amount);
+                await RespondAsync($"You don't have enough {Emotes.Emotes.PEN}.");
+                Logger.Information("/gamble used by {name}({uid}) with insufficient pen -> {currentPen}({amount})", Context.User.Username, Context.User.Id, user.Pen, Amount);
                 return;
             }
 
@@ -270,15 +264,15 @@ namespace Fumbi.Modules
 
                 user.Pen += Amount * (multiplier - 1);
                 await user.UpdateUserAsync();
-                await RespondAsync($"Congratulations, you spent {Amount} and have won {Amount * (multiplier - 1)} PEN!");
-                Logger.Information("H!gamble won by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount * (multiplier - 1));
+                await RespondAsync($"Congratulations, you spent {Amount:n0}{Emotes.Emotes.PEN} and have won {Amount * (multiplier - 1):n0}{Emotes.Emotes.PEN} (+{Amount * (multiplier - 1) - Amount:n0}{Emotes.Emotes.PEN})!");
+                Logger.Information("/gamble won by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount * (multiplier - 1));
                 return;
             }
 
             user.Pen -= Amount;
             await user.UpdateUserAsync();
-            await RespondAsync($"Sadly, you have lost :( ({Amount} PEN)");
-            Logger.Information("H!gamble lost by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount);
+            await RespondAsync($"You lost {Amount:h0}{Emotes.Emotes.PEN}! 😭");
+            Logger.Information("/gamble lost by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount);
         }
 
         [SlashCommand("balance", "Displays your current amount of PEN.")]
@@ -287,20 +281,20 @@ namespace Fumbi.Modules
         {
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
 
-            await RespondAsync($"Your current balance is {user.Pen} pen.");
+            await RespondAsync($"Your current balance is {user.Pen}{Emotes.Emotes.PEN}");
         }
 
         [SlashCommand("givepen", "Gives a specific amount of PEN to a user. Owner only.")]
         [Cooldown]
         public async Task PenCommand(IUser User, ulong Amount)
         {
+            await DeferAsync();
             if (Context.User.Id != Config.Instance.OwnerId)
             {
-                Logger.Warning("H!givepen used by {name}({uid}) with no permission.", Context.User.Username, Context.User.Id);
+                Logger.Warning("/givepen used by {name}({uid}) with no permission.", Context.User.Username, Context.User.Id);
                 await RespondAsync("No permission!");
                 return;
             }
-
             var user = await UserService.FindUserAsync(User.Id, User.Username);
 
             user.Pen += Amount;
@@ -315,8 +309,8 @@ namespace Fumbi.Modules
 
             if (transferrer.Pen < Amount)
             {
-                await RespondAsync("You don't have enough pen.");
-                Logger.Information("H!transfer used by {name}({uid}) with insufficient pen -> {currentPen}({amount})", Context.User.Username, Context.User.Id, transferrer.Pen, Amount);
+                await RespondAsync($"You don't have enough {Emotes.Emotes.PEN}");
+                Logger.Information("/transfer used by {name}({uid}) with insufficient pen -> {currentPen}({amount})", Context.User.Username, Context.User.Id, transferrer.Pen, Amount);
                 return;
             }
 
@@ -337,7 +331,7 @@ namespace Fumbi.Modules
         {
             if (Context.User.Id != Config.Instance.OwnerId)
             {
-                Logger.Warning("H!giveexp used by {name}({uid}) with no permission.", Context.User.Username, Context.User.Id);
+                Logger.Warning("/giveexp used by {name}({uid}) with no permission.", Context.User.Username, Context.User.Id);
                 await RespondAsync("No permission!");
                 return;
             }
