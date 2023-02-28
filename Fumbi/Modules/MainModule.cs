@@ -26,7 +26,7 @@ namespace Fumbi.Modules
 
             using (var image = await user.DrawProfileImageAsync(await UserService.CalculateRankAsync(User.Id), User.GetAvatarUrl()))
             {
-                await DeferAsync(true);
+                await DeferAsync();
                 string extension = image.Length < 1000000 ? ".png" : ".gif";
 
                 await FollowupWithFileAsync(image, "profile" + extension);
@@ -36,7 +36,7 @@ namespace Fumbi.Modules
         [SlashCommand("avatar", "Displays the avatar of the mentioned user.")]
         public async Task AvatarCommand(IUser User)
         {
-            await DeferAsync(true);
+            await DeferAsync();
             await FollowupAsync(User.GetAvatarUrl().Replace("size=128", "size=2048") ?? User.GetDefaultAvatarUrl());
         }
 
@@ -247,16 +247,16 @@ namespace Fumbi.Modules
                 uint multiplier = UserService.GambleCalculateMultiplier();
 
                 user.Pen += Amount * (multiplier - 1);
-                await RespondAsync($"Congratulations, you won {Amount * (multiplier - 1):n0}{Emotes.Emotes.PEN}!");
                 await user.UpdateUserAsync();
+                await RespondAsync($"Congratulations, you won {Amount * (multiplier - 1):n0}{Emotes.Emotes.PEN}!\nYou now have {user.Pen:n0}{Emotes.Emotes.PEN}.");
                 Logger.Information("/gamble won by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount * (multiplier - 1));
                 return;
             }
             else
             {
                 user.Pen -= Amount;
-                await RespondAsync($"You lost {Amount:n0}{Emotes.Emotes.PEN}! 😭");
                 await user.UpdateUserAsync();
+                await RespondAsync($"You lost {Amount:n0}{Emotes.Emotes.PEN}! 😭\nYou now have {user.Pen:n0}{Emotes.Emotes.PEN}.");
                 Logger.Information("/gamble lost by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount);
             }
         }
