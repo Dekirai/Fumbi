@@ -13,7 +13,6 @@ namespace Fumbi.Modules
         private static readonly ILogger Logger = Log.ForContext(Constants.SourceContextPropertyName, nameof(MainModule));
 
         [SlashCommand("profile", "Displays the profile of the mentioned user.")]
-        [Cooldown]
         public async Task ProfileCommand(IUser User)
         {
             if (User.GetAvatarUrl() == null)
@@ -27,7 +26,7 @@ namespace Fumbi.Modules
 
             using (var image = await user.DrawProfileImageAsync(await UserService.CalculateRankAsync(User.Id), User.GetAvatarUrl()))
             {
-                await DeferAsync();
+                await DeferAsync(true);
                 string extension = image.Length < 1000000 ? ".png" : ".gif";
 
                 await FollowupWithFileAsync(image, "profile" + extension);
@@ -35,22 +34,13 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("avatar", "Displays the avatar of the mentioned user.")]
-        [Cooldown]
         public async Task AvatarCommand(IUser User)
         {
-            string avatar = User.GetAvatarUrl(ImageFormat.Auto, 1024);
-            if (avatar == null)
-            {
-                await RespondAsync("User does not have an avatar.");
-                Logger.Information("/avatar used by {name}({uid}) with empty avatar(mentioned)", Context.User.Username, Context.User.Id);
-                return;
-            }
-
-            await RespondAsync(User.GetAvatarUrl().Replace("size=128", "size=2048") ?? User.GetDefaultAvatarUrl());
+            await DeferAsync(true);
+            await FollowupAsync(User.GetAvatarUrl().Replace("size=128", "size=2048") ?? User.GetDefaultAvatarUrl());
         }
 
         [SlashCommand("rank", "Displays the current rank of the mentioned user.")]
-        [Cooldown]
         public async Task RankCommand(IUser User)
         {
             if (User.GetAvatarUrl() == null)
@@ -70,7 +60,6 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("shop", "Displays the items available in the shop.")]
-        [Cooldown]
         public async Task ShopCommand()
         {
             var embed = new EmbedBuilder();
@@ -83,9 +72,9 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("buy", "Buy an item from the shop")]
-        [Cooldown]
         public async Task BuyCommand(byte Theme)
         {
+
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
 
             if (Theme <= 0 || Theme > 9)
@@ -124,7 +113,6 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("use", "Equip an item from your inventory.")]
-        [Cooldown]
         public async Task UseCommand(byte Theme)
         {
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
@@ -154,7 +142,6 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("daily", "Claim your daily reward.")]
-        [Cooldown(60, true)]
         public async Task DailyCommand()
         {
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
@@ -192,7 +179,6 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("dailyexp", "Check how much experience you can obtain for today.")]
-        [Cooldown]
         public async Task DailyExpCommand()
         {
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
@@ -222,7 +208,6 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("top", "Displays the top ranking.")]
-        [Cooldown(60, true)]
         public async Task TopCommand()
         {
             var rankList = await UserService.GetTopListAsync();
@@ -246,7 +231,6 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("gamble", "Gamble with your PEN for a chance to obtain more PEN.")]
-        [Cooldown]
         public async Task GambleCommand(ulong Amount)
         {
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
@@ -263,20 +247,21 @@ namespace Fumbi.Modules
                 uint multiplier = UserService.GambleCalculateMultiplier();
 
                 user.Pen += Amount * (multiplier - 1);
+                await RespondAsync($"Congratulations, you won {Amount * (multiplier - 1):n0}{Emotes.Emotes.PEN}!");
                 await user.UpdateUserAsync();
-                await RespondAsync($"Congratulations, you spent {Amount:n0}{Emotes.Emotes.PEN} and have won {Amount * (multiplier - 1):n0}{Emotes.Emotes.PEN} (+{Amount * (multiplier - 1) - Amount:n0}{Emotes.Emotes.PEN})!");
                 Logger.Information("/gamble won by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount * (multiplier - 1));
                 return;
             }
-
-            user.Pen -= Amount;
-            await user.UpdateUserAsync();
-            await RespondAsync($"You lost {Amount:h0}{Emotes.Emotes.PEN}! 😭");
-            Logger.Information("/gamble lost by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount);
+            else
+            {
+                user.Pen -= Amount;
+                await RespondAsync($"You lost {Amount:n0}{Emotes.Emotes.PEN}! 😭");
+                await user.UpdateUserAsync();
+                Logger.Information("/gamble lost by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount);
+            }
         }
 
         [SlashCommand("balance", "Displays your current amount of PEN.")]
-        [Cooldown]
         public async Task BalanceCommand()
         {
             var user = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
@@ -285,10 +270,8 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("givepen", "Gives a specific amount of PEN to a user. Owner only.")]
-        [Cooldown]
         public async Task PenCommand(IUser User, ulong Amount)
         {
-            await DeferAsync();
             if (Context.User.Id != Config.Instance.OwnerId)
             {
                 Logger.Warning("/givepen used by {name}({uid}) with no permission.", Context.User.Username, Context.User.Id);
@@ -302,7 +285,6 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("transfer", "Transfer a specific amount of PEN to another user from your balance.")]
-        [Cooldown]
         public async Task TransferCommand(IUser User, ulong Amount)
         {
             var transferrer = await UserService.FindUserAsync(Context.User.Id, Context.User.Username);
@@ -326,7 +308,6 @@ namespace Fumbi.Modules
         }
 
         [SlashCommand("giveexp", "Gives Experience to a user. Owner only.")]
-        [Cooldown]
         public async Task ExpCommand(IUser User, uint Amount)
         {
             if (Context.User.Id != Config.Instance.OwnerId)
