@@ -1,6 +1,18 @@
 # Fumbi
 Fork of [Fumbibot](https://github.com/aizuon/FumbiBot)
 
+# Information
+Fumbi is a "S4 League" inspired Discord Bot with a global leveling system.  
+Global means, that the gained experience is shared accross all servers your bot is added in.
+
+# Features
+- Leveling system up to level 80 like in the original game
+- Profile themes buyable in a shop
+- Gamble system for a chance to obtain more PEN
+- Daily command to obtain a random amount of PEN daily
+- You can obtain max 75.000 EXP per day to prevent excessive farming
+- Gained experience depends on the author's message length
+
 # Difference
 - Removed explicit content
 - Removed command prefix
