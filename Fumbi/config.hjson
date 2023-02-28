@@ -1,0 +1,12 @@
+{
+  bot_token: ""
+  bot_prefix: "not_implemented"
+  database:
+  {
+    host: ipaddress
+    username: root
+    password: password
+    database: database
+  }
+  owner: userid
+}
