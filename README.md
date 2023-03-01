@@ -3,7 +3,7 @@ Fork of [Fumbibot](https://github.com/aizuon/FumbiBot)
 
 # Information
 Fumbi is a "S4 League" inspired Discord Bot with a global leveling system.  
-Global means, that the gained experience is shared accross all servers your bot is added in.
+Global means, that the gained experience is shared across all servers your bot is added in.
 
 # Features
 - Leveling system up to level 80 like in the original game
