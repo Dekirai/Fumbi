@@ -13,7 +13,7 @@ Global means, that the gained experience is shared across all servers your bot i
 - You can obtain max 75.000 EXP per day to prevent excessive farming
 - Gained experience depends on the author's message length
 
-# Difference
+# Fork difference
 - Removed explicit content
 - Removed command prefix
 - Added slash commands
