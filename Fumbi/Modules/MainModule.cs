@@ -152,6 +152,8 @@ namespace Fumbi.Modules
 
                 user.Pen += penGain;
                 user.LastDaily = DateTime.Now.ToString();
+                if (user.Pen > 500000000)
+                    user.Pen = 500000000;
                 await user.UpdateUserAsync();
 
                 using (var image = user.DrawDailyImage(penGain))
@@ -247,14 +249,23 @@ namespace Fumbi.Modules
                 uint multiplier = UserService.GambleCalculateMultiplier();
 
                 user.Pen += Amount * (multiplier - 1);
+                if (user.Pen > 500000000)
+                {
+                    user.Pen = 500000000;
+                    await RespondAsync($"You have received the limit of the obtainable {Emotes.Emotes.PEN} which is 500.000.000!");
+                }
+                else
+                    await RespondAsync($"Congratulations, you won {Amount * (multiplier - 1):n0}{Emotes.Emotes.PEN}!\nYour new balance is {user.Pen:n0}{Emotes.Emotes.PEN}.");
                 await user.UpdateUserAsync();
-                await RespondAsync($"Congratulations, you won {Amount * (multiplier - 1):n0}{Emotes.Emotes.PEN}!\nYour new balance is {user.Pen:n0}{Emotes.Emotes.PEN}.");
+                
                 Logger.Information("/gamble won by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount * (multiplier - 1));
                 return;
             }
             else
             {
                 user.Pen -= Amount;
+                if (user.Pen > 500000000)
+                    user.Pen = 500000000;
                 await user.UpdateUserAsync();
                 await RespondAsync($"You lost {Amount:n0}{Emotes.Emotes.PEN}! 😭\nYour new balance is {user.Pen:n0}{Emotes.Emotes.PEN}.");
                 Logger.Information("/gamble lost by {name}({uid}) -> {amount} pen", Context.User.Username, Context.User.Id, Amount);
@@ -281,6 +292,8 @@ namespace Fumbi.Modules
             var user = await UserService.FindUserAsync(User.Id, User.Username);
 
             user.Pen += Amount;
+            if (user.Pen > 500000000)
+                user.Pen = 500000000;
             await user.UpdateUserAsync();
         }
 
@@ -302,6 +315,8 @@ namespace Fumbi.Modules
             var transferee = await UserService.FindUserAsync(User.Id, User.Username);
 
             transferee.Pen += Amount;
+            if (transferee.Pen > 500000000)
+                transferee.Pen = 500000000;
             await transferee.UpdateUserAsync();
 
             await RespondAsync("Transfer successful!");
