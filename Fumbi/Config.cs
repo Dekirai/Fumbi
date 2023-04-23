@@ -27,14 +27,12 @@ namespace Fumbi
         public Config()
         {
             BotToken = "";
-            BotPrefix = "";
             Database = new DatabaseConfig();
             OwnerId = 0;
         }
 
         public static Config Instance { get; }
         [JsonProperty("bot_token")] public string BotToken { get; set; }
-        [JsonProperty("bot_prefix")] public string BotPrefix { get; set; }
         [JsonProperty("database")] public DatabaseConfig Database { get; set; }
 
         private void Save()

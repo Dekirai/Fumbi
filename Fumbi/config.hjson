@@ -1,9 +1,8 @@
 {
   bot_token: ""
-  bot_prefix: "not_implemented"
   database:
   {
-    host: ipaddress
+    host: localhost
     username: root
     password: password
     database: database
