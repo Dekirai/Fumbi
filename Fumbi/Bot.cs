@@ -89,9 +89,9 @@ namespace Fumbi
                 message.Author.IsBot || message.Channel.GetType() == typeof(SocketDMChannel))
                 return;
 
-            var user = await UserService.FindUserAsync(message.Author.Id, message.Author.Username);
+            var user = await UserService.FindUserAsync(message.Author.Id, message.Author.GlobalName);
 
-            if (await user.MessageRecievedAsync((uint)message.Content.Length, message.Author.Username))
+            if (await user.MessageRecievedAsync((uint)message.Content.Length, message.Author.GlobalName))
             {
                 await user.UpdateUserAsync();
 
@@ -158,7 +158,7 @@ namespace Fumbi
                     }
                 }
 
-                Logger.Information("Level up for {name}({uid}), new level -> {newlevel}", message.Author.Username, message.Author.Id, user.Level);
+                Logger.Information("Level up for {name}({uid}), new level -> {newlevel}", message.Author.GlobalName, message.Author.Id, user.Level);
             }
 
             int argPos = 0;
